@@ -1,4 +1,4 @@
 function ChangePageWithID(){
     console.log("Change Page");
-    location.href = "AdventureGameTest"
+    location.href = "ColorChanger"
 }
