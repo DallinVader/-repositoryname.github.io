@@ -21,9 +21,6 @@ h1{
 }
 
 body {
-    background: rgba(0, 0, 0, 0) url(images/StarWarsPoster.png);
     background-color: black;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
     background-size: cover;
   }
