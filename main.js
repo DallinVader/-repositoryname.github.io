@@ -1,9 +1,8 @@
 function ChangePageToCollorChanger(){
-    console.log("Change Page");
-    location.href = "ColorChanger";
+    window.open("ColorChanger", "_blank")
 }
 
 function ChangePageToNameDisplay(){
     console.log("Change Page");
-    location.href = "NameDisplay";
+    window.open("NameDisplay", "_blank")
 }
