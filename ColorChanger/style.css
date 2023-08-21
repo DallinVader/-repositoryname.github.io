@@ -22,5 +22,6 @@ h1{
 
 body {
     background-color: black;
+    background-image: url(images/StarWarsPoster.png);
     background-size: cover;
   }
