@@ -1,0 +1,28 @@
+h1{
+    text-align: center;
+    color: rgb(255, 255, 255);
+    font-family: STJEDISE;
+}
+
+
+/* Adding fonts to font familyt*/
+@font-face{
+    src: url(fonts/Starjedi.ttf);
+    font-family: "Starjedi";
+    font-style: normal;
+    font-size: 100px;
+}
+
+@font-face{
+    src: url(fonts/STJEDISE.ttf);
+    font-family: "STJEDISE";
+    font-style: normal;
+    font-size: 100px;
+}
+
+body {
+    background-image: url(images/StarWarsPoster.png);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+  }
