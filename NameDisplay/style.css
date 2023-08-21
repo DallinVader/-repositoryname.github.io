@@ -1,13 +1,13 @@
 h1{
     text-align: center;
-    color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
     font-family: STJEDISE;
 }
 
 
 /* Adding fonts to font familyt*/
 @font-face{
-    src: url(../ColorChanger/fonts/starjedi/Starjedi.ttf);
+    src: url(../ColorChanger/fonts/starjedi/Starjhol.ttf);
     font-family: "Starjedi";
     font-style: normal;
     font-size: 100px;
@@ -21,7 +21,7 @@ h1{
 }
 
 body {
-    background-image: url(../images/StarWarsPoster.png);
+    background-image: url(../images/Millennium-Falcon.jpg);
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
