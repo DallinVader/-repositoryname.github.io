@@ -7,21 +7,21 @@ h1{
 
 /* Adding fonts to font familyt*/
 @font-face{
-    src: url(ColorChanger/fonts/starjedi/Starjedi.ttf);
+    src: url(../ColorChanger/fonts/starjedi/Starjedi.ttf);
     font-family: "Starjedi";
     font-style: normal;
     font-size: 100px;
 }
 
 @font-face{
-    src: url(ColorChanger/fonts/starjedi/Starjedi.ttf);
+    src: url(../ColorChanger/fonts/starjedi/Starjedi.ttf);
     font-family: "STJEDISE";
     font-style: normal;
     font-size: 100px;
 }
 
 body {
-    background-image: url(images/StarWarsPoster.png);
+    background-image: url(../images/StarWarsPoster.png);
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
