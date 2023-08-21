@@ -7,14 +7,14 @@ h1{
 
 /* Adding fonts to font familyt*/
 @font-face{
-    src: url(fonts/Starjedi.ttf);
+    src: url(fonts/starjedi/Starjhol.ttf);
     font-family: "Starjedi";
     font-style: normal;
     font-size: 100px;
 }
 
 @font-face{
-    src: url(fonts/STJEDISE.ttf);
+    src: url(fonts/starjedi/Starjedi.ttf);
     font-family: "STJEDISE";
     font-style: normal;
     font-size: 100px;
