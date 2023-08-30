@@ -12,5 +12,5 @@ function ChangePageToNameDisplay(){
 // Opens tab to Week 2 java main.html
 function ChangePageToWeek2Java(){
     console.log("Change Page");
-    window.open("NameDisplay", "_blank")
+    window.open("Week2JavaScript", "_blank")
 }
