@@ -1,6 +1,6 @@
 // Variables
-var nameText = "Dallin Whitaker";
-var classInfoText = "Web Design /Web App Development 2 (TTA)";
+const nameText = "Dallin Whitaker";
+const classInfoText = "Web Design /Web App Development 2 (TTA)";
 
 
 // Opens a tab to ColorChange site
