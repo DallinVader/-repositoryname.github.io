@@ -1,5 +1,4 @@
 // Variables
-var CurrentHTML = document;
 var nameText = "Dallin Whitaker";
 var classInfoText = "Web Design /Web App Development 2 (TTA)";
 
@@ -23,7 +22,7 @@ function ChangePageToWeek2Java(){
 
 //OnPageLoaded function is triggerd by onload="OnPageLoaded()"
 function OnPageLoaded(){
-    CurrentHTML.getElementById("name").innerHTML = nameText;
-    CurrentHTML.getElementById("classInfo").innerHTML = classInfoText;
+    document.getElementById("name").innerHTML = nameText;
+    document.getElementById("classInfo").innerHTML = classInfoText;
     console.log("function OnPageLoaded() ran On " + '"' + document.title + '"' + " Page")
 }
