@@ -21,6 +21,7 @@ function ChangePageToWeek2Java(){
     window.open("Week2JavaScript")
 }
 
+//OnPageLoaded function is triggerd by onload="OnPageLoaded()"
 function OnPageLoaded(){
     CurrentHTML.getElementById("name").innerHTML = nameText;
     CurrentHTML.getElementById("classInfo").innerHTML = classInfoText;
