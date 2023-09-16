@@ -1,0 +1,32 @@
+<link rel="stylesheet" href="firstjava.css">
+<script src="../main.js"></script>
+
+<body onload="OnPageLoaded()"></body>
+
+<!doctype html>
+
+<html lang="en">
+    <head>
+        <title>First Java</title>
+        <h1 id="name">Test Name</h1>
+        <h1 id="classInfo">Test Class Info</h1>
+
+        <p>
+            Math
+            <h6>
+                <input style="background: none;" type="number" id="FirstNumberCal">
+                <select style="background: none;" name="MathEquationSelector" id="MES">
+                    <option>+</option>
+                    <option>-</option>
+                    <option>*</option>
+                    <option>/</option>
+                </select>
+                <input style="background: none;" type="number" id="SecondNumberCal">
+            </h6>
+            <h6>
+                <button onclick="CalculateCal()">Calculate</button>
+            </h6>
+            <h6 id="OutputCalText">a1</h6>
+        </p>
+    </head>
+</html>

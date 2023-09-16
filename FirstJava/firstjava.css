@@ -1,0 +1,39 @@
+/* Makes the h1 element have font and spacific color */
+h1{
+    text-align: center;
+    color: rgb(255, 255, 255);
+    font-family: STJEDISE;
+}
+
+
+/* Adding fonts to font family*/
+@font-face{
+    src: url(../ColorChanger/fonts/starkiller-font/StarkillerItalic-KzoW.ttf);
+    font-family: "Starjedi";
+    font-style: normal;
+    font-size: 100px;
+}
+
+@font-face{
+    src: url(../ColorChanger/fonts/starkiller-font/StarkillerOutline-3L5L.ttf);
+    font-family: "STJEDISE";
+    font-style: normal;
+    font-size: 100px;
+}
+
+/* Makes a image for the background */
+body {
+    background-image: url(../images/EmpireStarWarsBackground.png);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: fixed;
+  }
+
+p{
+    text-align: center;
+}
+
+h6{
+    text-align: center;
+    background: none;
+}
