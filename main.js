@@ -29,6 +29,10 @@ function OnPageLoaded(){
     document.getElementById("name").innerHTML = nameText;
     document.getElementById("classInfo").innerHTML = classInfoText;
     console.log("function OnPageLoaded() ran On " + '"' + document.title + '"' + " Page")
+
+    Num1 = document.getElementById("FirstNumberCal").value = Math.floor(Math.random() * (-100 - 100) + 100);
+    Num2 = document.getElementById("SecondNumberCal").value = Math.floor(Math.random() * (-100 - 100) + 100);
+
 }
 
 function CalculateCal(){
