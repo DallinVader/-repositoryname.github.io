@@ -2,8 +2,9 @@ const Canvas = document.getElementById("Canvas");
 const ctx = Canvas.getContext("2d");
 
 //Canvas size
-Canvas.width = 768;
-Canvas.height = 432;
+Canvas.width = 512;
+Canvas.height = 224;
+Canvas.style.scale = "relative";
 
 
 //Grid variables
@@ -68,12 +69,12 @@ function Repeat() {
         CurrentSprite.DrawSprite(CurrentSprite.fliped);
         
         //Moves the objects to 0 if they go past the canvas width
-        if(CurrentSprite.position.x <= Canvas.width){
+        if(CurrentSprite.position.x <= Canvas.width && CurrentSprite.position.x >= 0){
             CurrentSprite.position.x += CurrentSprite.speed;
         }
         else{
-            console.log("MadeIt");
-            CurrentSprite.position.x = 0;
+            console.log(CurrentSprite.name);
+            EnemysToDraw.splice(i, 1);
         }
 
         //Check and move objects if they are above or below the canvas
@@ -115,25 +116,34 @@ class Enemy{
         }
         else{
             ctx.scale(1, 1);
-            ctx.drawImage(this.img, this.ImgCrop, 0, this.size.x, this.size.y, this.position.x, this.position.y, this.scale.x, this.scale.y);    
+            ctx.drawImage(this.img, this.ImgCrop, 0, this.size.x, this.size.y, this.position.x, this.position.y, this.scale.x, this.scale.y);
         }
 
         ctx.restore();
     }
 }
 
-class FrendlyTroop{
+class FrendlyObj{
     constructor(ImageSrc, ImgCrop, position, size, scale, speed, name, IsFliped){
         this.position = position;
         this.size = size;
         this.scale = scale;
         this.speed = speed;
         this.name = name;
-        this.fliped = IsFliped;
         this.ImgCrop = ImgCrop;
+        this.fliped = IsFliped;
 
         this.img = new Image();
         this.img.src = ImageSrc;
+    }
+
+    DrawObj(){
+        ctx.save();
+
+        ctx.scale(1, 1);
+        ctx.drawImage(this.img, this.ImgCrop, 0, this.size.x, this.size.y, this.position.x, this.position.y, this.scale.x, this.scale.y);
+
+        ctx.restore();
     }
 }
 
@@ -146,7 +156,7 @@ function SpawnSpriteObject(ObjCount, SpritePath, StartSpawnPos, speed, IsFliped)
 }
 
 //Uses the spawn function to spawn goblins for testing
-SpawnSpriteObject(25, "Sprites/Goblin.png", 32, -1, true);
+SpawnSpriteObject(12, "Sprites/Goblin.png", 32, -1, true);
 
 //Test varables
 const Dwarf = new Enemy("Sprites/Dwarf.png", 0, {x: 375, y: 208}, {x: 16, y: 16}, {x: 16, y: 16}, 0.1, "Dwarf", false);

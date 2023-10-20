@@ -41,6 +41,7 @@ html{
 #Canvas{
     border: black 3px solid;
     position: absolute;
+    width: 75%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
