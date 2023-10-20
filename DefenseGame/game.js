@@ -3,19 +3,21 @@ const ctx = Canvas.getContext("2d");
 
 //Canvas size
 Canvas.width = 512;
-Canvas.height = 224;
+Canvas.height = 240;
 Canvas.style.scale = "relative";
 
+//Hot bar variables
+const HotBarSize = 32;
+let CurrentWave = 0;
 
 //Grid variables
-const HotBarSize = 32;
 const GridTileSize = 16;
 const GameTiles = [];
 
-
 //Stores all the game objects that display sprites
-let EnemysToDraw = [];
-let FrendlyTroopsToDraw = [];
+let SpritesToDraw = [];
+let Enemys = [];
+let PlayerProjectile = [];
 
 //Tile template so I can create more tiles easy
 class Tile {
@@ -61,38 +63,74 @@ function Repeat() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, Canvas.width, HotBarSize);
 
-    for(let i = 0; i < EnemysToDraw.length; i++){
+    for(let i = 0; i < SpritesToDraw.length; i++){
         //Grabs the cuurent object it is looping through and saves it as a var
-        let CurrentSprite = EnemysToDraw[i];
+        let CurrentSprite = SpritesToDraw[i];
 
         //Draw the sprites depending on if they should be fliped or not
         CurrentSprite.DrawSprite(CurrentSprite.fliped);
-        
-        //Moves the objects to 0 if they go past the canvas width
-        if(CurrentSprite.position.x <= Canvas.width && CurrentSprite.position.x >= 0){
-            CurrentSprite.position.x += CurrentSprite.speed;
-        }
-        else{
-            console.log(CurrentSprite.name);
-            EnemysToDraw.splice(i, 1);
-        }
-
-        //Check and move objects if they are above or below the canvas
-        if(CurrentSprite.position.y < HotBarSize){
-            console.log("Moveing Sprite " + CurrentSprite.name)
-            CurrentSprite.position.y += GridTileSize;
-        }
-        if(CurrentSprite.position.y > Canvas.height - GridTileSize){
-            console.log("Moveing Sprite " + CurrentSprite.name)
-            CurrentSprite.position.y -= GridTileSize;
+    }
+    if(Enemys.length == 0){
+        CurrentWave += 1;
+        for(let w = 0; w < CurrentWave; w++){
+            SpawnSpriteObject(12, "Sprites/Goblin.png", 32, -1.5, true);
         }
     }
+
+
+    for (let i = 0; i < PlayerProjectile.length; i++){
+        let CurrentProjectile = PlayerProjectile[i];
+        
+        CurrentProjectile.position.x += CurrentProjectile.speed;
+
+        for (let e = 0; e < Enemys.length; e++) {
+            if(CollisionDetect(CurrentProjectile, Enemys[e])){
+                
+                for(let w = 0; w < SpritesToDraw.length; w++){
+                    if(SpritesToDraw[i].name == CurrentProjectile.name){
+                        console.log("Yay");
+                    }
+                }
+
+
+                Enemys.splice(e, 1);
+                PlayerProjectile.splice(i, 1);
+
+                let DeathSound = new Audio("Sounds/DeathSound.wav");
+                DeathSound.play();
+
+            }
+            
+        }
+
+    }
+
+    for (let i = 0; i < Enemys.length; i++) {
+        //Grabs the cuurent object it is looping through and saves it as a var
+        let CurrentEnemy = Enemys[i];
+
+        //Moves the objects to 0 if they go past the canvas width
+        if(CurrentEnemy.position.x <= Canvas.width && CurrentEnemy.position.x >= 0){
+            CurrentEnemy.position.x += CurrentEnemy.speed;
+        }
+
+
+        //Check and move objects if they are above or below the canvas
+        if(CurrentEnemy.position.y < HotBarSize){
+            CurrentEnemy.position.y += GridTileSize;
+        }
+        if(CurrentEnemy.position.y > Canvas.height - GridTileSize){
+            CurrentEnemy.position.y -= GridTileSize;
+        }
+        
+    }
+
     //Repeats the function
     requestAnimationFrame(Repeat);
 }
 
 //Helps me create multiple Sprite game objects
-class Enemy{
+class Sprite{
     constructor(ImageSrc, ImgCrop, position, size, scale, speed, name, IsFliped){
         this.position = position;
         this.size = size;
@@ -123,53 +161,65 @@ class Enemy{
     }
 }
 
-class FrendlyObj{
-    constructor(ImageSrc, ImgCrop, position, size, scale, speed, name, IsFliped){
-        this.position = position;
-        this.size = size;
-        this.scale = scale;
-        this.speed = speed;
-        this.name = name;
-        this.ImgCrop = ImgCrop;
-        this.fliped = IsFliped;
+function CollisionDetect(a, b){
+    let TrueOrFalseCollision;
 
-        this.img = new Image();
-        this.img.src = ImageSrc;
+    if(a.position.x > b.position.x - b.scale.x && a.position.x < b.position.x + b.scale.x && a.position.y > b.position.y - b.size.y && a.position.y < b.position.y + b.size.y
+        ){
+        TrueOrFalseCollision = true;
     }
-
-    DrawObj(){
-        ctx.save();
-
-        ctx.scale(1, 1);
-        ctx.drawImage(this.img, this.ImgCrop, 0, this.size.x, this.size.y, this.position.x, this.position.y, this.scale.x, this.scale.y);
-
-        ctx.restore();
+    else{
+        TrueOrFalseCollision = false;
     }
+    return TrueOrFalseCollision;
+
 }
 
 //Function that spawns objects for me
 function SpawnSpriteObject(ObjCount, SpritePath, StartSpawnPos, speed, IsFliped){
     for(let i = 0; i < ObjCount; i++){
-        let temp = new Enemy(SpritePath, 0, {x: Canvas.width, y: StartSpawnPos + (16 * i)}, {x: 16, y: 16}, {x: 16, y: 16}, Math.random() * (0.25 * speed, 0.9 * speed) + 0.1 * speed, SpritePath + " " + i, IsFliped);
-        EnemysToDraw.push(temp);
+        let temp = new Sprite(SpritePath, 0, {x: Canvas.width, y: StartSpawnPos + (16 * i)}, {x: 16, y: 16}, {x: 16, y: 16}, Math.random(0.2, 1) * speed, SpritePath + " " + i, IsFliped);
+        SpritesToDraw.push(temp);
+        Enemys.push(temp);
+    }
+}
+
+function SpawnFrendleyUnit(ObjCount, SpritePath, offset, StartSpawnPos, StartSize, speed, name, IsFliped){
+    for(let i = 0; i < ObjCount; i++){
+        let temp = new Sprite(SpritePath, offset, StartSpawnPos, {x: StartSize.x, y: StartSize.y}, {x: StartSize.x, y: StartSize.y}, speed, name, IsFliped);
+        PlayerProjectile.push(temp);
+        SpritesToDraw.push(temp);
+    }
+}
+
+function RemoveObjByNameFromList(List, NameToFind){
+    for (let i = 0; i < List.length; i++) {
+        if(List[i].name == NameToFind){
+            console.log("Removed " + List[i].name)
+            List.splice(i, 1);
+        }
+        
     }
 }
 
 //Uses the spawn function to spawn goblins for testing
-SpawnSpriteObject(12, "Sprites/Goblin.png", 32, -1, true);
+SpawnSpriteObject(12, "Sprites/Goblin.png", 32, -1.5, true);
 
 //Test varables
-const Dwarf = new Enemy("Sprites/Dwarf.png", 0, {x: 375, y: 208}, {x: 16, y: 16}, {x: 16, y: 16}, 0.1, "Dwarf", false);
-const Wizard = new Enemy("Sprites/Wizard.png", 0, {x: 375, y: 192}, {x: 16, y: 16}, {x: 16, y: 16}, 0.15, "Wizard", false);
-let TileSelector = new Enemy("Sprites/Ground.png", 224, {x: 0, y: HotBarSize + 200}, {x: 16, y: 16}, {x: 16, y: 16}, 0, "TileSelector", false);
+const Dwarf = new Sprite("Sprites/Dwarf.png", 0, {x: 375, y: 208}, {x: 16, y: 16}, {x: 16, y: 16}, 0.1, "Dwarf", false);
+const Wizard = new Sprite("Sprites/Wizard.png", 0, {x: 375, y: 192}, {x: 16, y: 16}, {x: 16, y: 16}, 0.15, "Wizard", false);
+let TileSelector = new Sprite("Sprites/Dragon.png", 0, {x: 0, y: HotBarSize + 200}, {x: 46, y: 16}, {x: 46, y: 16}, 0, "TileSelector", false);
 
-EnemysToDraw.push(Wizard, Dwarf, TileSelector);
+SpritesToDraw.push(Wizard, Dwarf, TileSelector);
 
 //A function that runs evrey frame
 Repeat();
-
+let ProjectileId = 0;
 //Regesters key presses
 document.addEventListener("keydown", function(event){
+
+    let StartMusic = new Audio("Sounds/FireSoundEffect.wav");
+
     if(event.key === "w"){
         TileSelector.position.y -= GridTileSize;
     }
@@ -177,8 +227,12 @@ document.addEventListener("keydown", function(event){
         TileSelector.position.y += GridTileSize;
         TileSelector.ImageSrc = "Sprites/Wizard.png"
     }
+    if(event.key === " "){
+        StartMusic.play();
+        let TempProjectile = SpawnFrendleyUnit(1, "Sprites/FireProjectile.png", 97, {x: TileSelector.position.x, y: TileSelector.position.y}, {x: 32, y: 16}, 2, "FireProjectile" + ProjectileId, false);
+        ProjectileId += 1;
+    }
 });
-
 
 // //DragonAnimations
  const DragonAnimations = [
