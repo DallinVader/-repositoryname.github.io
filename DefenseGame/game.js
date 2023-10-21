@@ -23,6 +23,7 @@ let PlayerProjectiles = [];
 //Other varables
 let ProjectileId = 0;
 
+//Checks if the game is over
 function GameOver(){
     Enemys = [];
     PlayerProjectiles = [];
@@ -76,14 +77,6 @@ function Repeat() {
     ctx.font = "15px Arial";
     ctx.fillText("Wave " + CurrentWave, 0, 25);
     ctx.fillText("Gold " + CurrentGold, 60, 25);
-    
-    if(CurrentGold < 0){
-        GameOver();
-        ctx.font = "48px serif";
-        ctx.textAlign = "center";
-        ctx.fillText("GameOver", Canvas.width / 2, Canvas.height / 2 + HotBarSize);
-        return;
-    }
 
     for(let i = 0; i < SpritesToDraw.length; i++){
         //Grabs the cuurent object it is looping through and saves it as a var
@@ -103,6 +96,15 @@ function Repeat() {
         }
         //Draw the sprites depending on if they should be fliped or not
         CurrentSprite.DrawSprite(CurrentSprite.fliped);
+    }
+
+    if(CurrentGold < 0){
+        GameOver();
+        ctx.font = "48px serif";
+        ctx.textAlign = "center";
+        ctx.fillText("GameOver", Canvas.width / 2, Canvas.height / 2 + HotBarSize);
+        requestAnimationFrame(Repeat);
+        return;
     }
     
     if(Enemys.length == 0){
