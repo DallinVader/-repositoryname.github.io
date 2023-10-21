@@ -65,9 +65,11 @@ function DrawGridTiles() {
         GameTiles[i].Draw();
     }
 }
-
+let Cooldown = 0;
 function Repeat() {
     DrawGridTiles();
+
+    Cooldown += 1;
 
     //Draws the menu at the top of the canvas in black
     ctx.drawStyle = "black";
@@ -153,7 +155,7 @@ function Repeat() {
         }
 
         if(CurrentEnemy.gold > 0){
-            CurrentEnemy.position.x += CurrentEnemy.speed * -0.25;
+            CurrentEnemy.position.x += CurrentEnemy.speed * -0.5;
             CurrentEnemy.ImgCrop = 16;
         }
 
@@ -280,14 +282,22 @@ document.addEventListener("keydown", function(event){
 
     if(event.key === "w" || event.key === "W"){
         TileSelector.position.y -= GridTileSize;
+        if(TileSelector.position.y < HotBarSize){
+            TileSelector.position.y += GridTileSize;
+        }
     }
     if(event.key === "s" || event.key === "S"){
         TileSelector.position.y += GridTileSize;
-        TileSelector.ImageSrc = "Sprites/Wizard.png"
+        if(TileSelector.position.y > Canvas.height - HotBarSize){
+            TileSelector.position.y -= GridTileSize; 
+        }
     }
     if(event.key === " "){
         StartMusic.play();
-        let TempProjectile = SpawnFrendleyUnit(1, "Sprites/FireProjectile.png", 97, {x: TileSelector.position.x, y: TileSelector.position.y}, {x: 32, y: 16}, 2, "FireProjectile" + ProjectileId + Math.floor(Math.random() * (-100 - 100) + 100), false, true);
+        if(Cooldown > 20 - (CurrentWave * 2)){
+            let TempProjectile = SpawnFrendleyUnit(1, "Sprites/FireProjectile.png", 97, {x: TileSelector.position.x, y: TileSelector.position.y}, {x: 32, y: 16}, 2, "FireProjectile " + ProjectileId + Math.floor(Math.random() * (-100 - 100) + 100), false, true);
+            Cooldown = 0;
+        }
         ProjectileId += 1;
     }
 });
