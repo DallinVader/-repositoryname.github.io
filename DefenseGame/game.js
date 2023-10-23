@@ -8,8 +8,11 @@ Canvas.style.scale = "relative";
 
 //Hot bar variables
 const HotBarSize = 32;
-let CurrentWave = 0;
+let CurrentWave = 10;
+let CurrentWaveForBoses = 0;
 let CurrentGold = 120;
+let ElapsedTime = 0;
+let CurrentMalice = 50;
 
 //Grid variables
 const GridTileSize = 16;
@@ -19,6 +22,7 @@ const GameTiles = [];
 let SpritesToDraw = [];
 let Enemys = [];
 let PlayerProjectiles = [];
+let BoulderProjectiles = [];
 
 //Other varables
 let ProjectileId = 0;
@@ -71,14 +75,23 @@ function Repeat() {
 
     Cooldown += 1;
 
+    ElapsedTime += 0.015;
+
     //Draws the menu at the top of the canvas in black
     ctx.drawStyle = "black";
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, Canvas.width, HotBarSize);
+    ctx.fillRect(0, Canvas.height - GridTileSize, Canvas.width, GridTileSize);
+    ctx.fillStyle = "red";
+    ctx.fillRect(0, Canvas.height - GridTileSize + 2, Canvas.width * CurrentMalice * 0.01, GridTileSize - 4);
     ctx.fillStyle = "white";
     ctx.font = "15px Arial";
     ctx.fillText("Wave " + CurrentWave, 0, 25);
     ctx.fillText("Gold " + CurrentGold, 60, 25);
+    ctx.fillText("Malice Collected: " + CurrentMalice, 300, 25);
+    ctx.fillText("Time: " + Math.round(ElapsedTime), 455, 25);
+    ctx.fillText("E", 150, 30);
+    ctx.fillText("R", 175, 30);
 
     for(let i = 0; i < SpritesToDraw.length; i++){
         //Grabs the cuurent object it is looping through and saves it as a var
@@ -111,11 +124,47 @@ function Repeat() {
     
     if(Enemys.length == 0){
         CurrentWave += 1;
+        CurrentWaveForBoses += 1;
         for(let w = 0; w < CurrentWave; w++){
-            SpawnSpriteObject(12, "Sprites/Goblin.png", {x: Canvas.width, y: HotBarSize}, -1.5, true, true);
+            if(CurrentWaveForBoses == 5){
+                SpawnSpriteObject(8, "Sprites/Dwarf.png", {x: Canvas.width, y: HotBarSize + 32}, -0.2, true, true, 3);
+            }
+            if(CurrentWaveForBoses == 10){
+                SpawnSpriteObject(8, "Sprites/Wizard.png", {x: Canvas.width, y: HotBarSize + 32}, -0.25, true, true, 2);
+            }
+            if(CurrentWaveForBoses != 5 && CurrentWaveForBoses != 10){
+                SpawnSpriteObject(12, "Sprites/Goblin.png", {x: Canvas.width, y: HotBarSize}, -0.5, true, true, 1);
+            }
+        }
+        if(CurrentWaveForBoses >= 10){
+            CurrentWaveForBoses = 0;
         }
     }
 
+    for (let b = 0; b < BoulderProjectiles.length; b++){
+        let CurrentBoulder = BoulderProjectiles[b];
+
+        if(CurrentBoulder.position.x < Canvas.width){
+            CurrentBoulder.position.x += CurrentBoulder.speed;
+        }
+        else{
+            BoulderProjectiles.splice(b, 1);
+            CurrentBoulder.Destroy = true;
+        }
+        for (let e = 0; e < Enemys.length; e++) {
+            if(CollisionDetect(CurrentBoulder, Enemys[e])){
+                Enemys[e].position = CurrentBoulder.position;
+                CurrentBoulder.health -= 1;
+                Enemys[e].health -= 1;
+                if(CurrentBoulder.health <= 0){
+                    
+                }
+            }
+        }
+
+        CurrentBoulder.DrawSprite(CurrentBoulder.fliped);
+
+    }
 
     for (let i = 0; i < PlayerProjectiles.length; i++){
         let CurrentProjectile = PlayerProjectiles[i];
@@ -126,10 +175,14 @@ function Repeat() {
             if(CollisionDetect(CurrentProjectile, Enemys[e])){
                 
                 CurrentProjectile.Destroy = true;
-                Enemys[e].Destroy = true;
-
-
-                Enemys.splice(e, 1);
+                Enemys[e].health -= 1;
+                if(Enemys[e].health <= 0){
+                    if(CurrentMalice < 100){
+                        CurrentMalice += 1;
+                    }
+                    Enemys[e].Destroy = true;
+                    Enemys.splice(e, 1);
+                }
                 PlayerProjectiles.splice(i, 1);
 
                 let DeathSound = new Audio("Sounds/DeathSound.wav");
@@ -138,6 +191,8 @@ function Repeat() {
             }
             
         }
+        
+        CurrentProjectile.DrawSprite(CurrentProjectile.fliped);
 
     }
     
@@ -158,7 +213,6 @@ function Repeat() {
             CurrentEnemy.position.x += CurrentEnemy.speed * -0.5;
             CurrentEnemy.ImgCrop = 16;
         }
-
         if(CurrentEnemy.gold > 0 && CurrentEnemy.position.x > Canvas.width){
             CurrentGold -= CurrentEnemy.gold;
             RemoveObjByNameFromList(SpritesToDraw, CurrentEnemy.name);
@@ -182,7 +236,7 @@ function Repeat() {
 
 //Helps me create multiple Sprite game objects
 class Sprite{
-    constructor(ImageSrc, ImgCrop, position, size, scale, speed, name, IsFliped){
+    constructor(ImageSrc, ImgCrop, position, size, scale, speed, name, IsFliped, Health){
         this.position = position;
         this.size = size;
         this.scale = scale;
@@ -191,6 +245,8 @@ class Sprite{
         this.fliped = IsFliped;
         this.ImgCrop = ImgCrop;
         this.Destroy = false;
+        this.health = Health;
+        this.IsHitByBoulder = false;
         
         this.gold = 0;
 
@@ -230,9 +286,9 @@ function CollisionDetect(a, b){
 }
 
 //Function that spawns objects for me
-function SpawnSpriteObject(ObjCount, SpritePath, StartSpawnPos, speed, IsFliped, IsEvil){
+function SpawnSpriteObject(ObjCount, SpritePath, StartSpawnPos, speed, IsFliped, IsEvil, Health){
     for(let i = 0; i < ObjCount; i++){
-        let temp = new Sprite(SpritePath, 0, {x: StartSpawnPos.x, y: StartSpawnPos.y + (GridTileSize * i)}, {x: 16, y: 16}, {x: 16, y: 16}, Math.random(0.5, 1) * (0.5, 1) + 0.75 * speed, SpritePath + " " + i + " " + Math.floor(Math.random() * (-100000 - 100000) + 100000), IsFliped);
+        let temp = new Sprite(SpritePath, 0, {x: StartSpawnPos.x, y: StartSpawnPos.y + (GridTileSize * i)}, {x: 16, y: 16}, {x: 16, y: 16}, Math.random(0, 1) * (0 - 1) + 1 * speed, SpritePath + " " + i + " " + Math.floor(Math.random() * (-100000 - 100000) + 100000), IsFliped, Health);
         SpritesToDraw.push(temp);
         if(IsEvil){
             Enemys.push(temp);
@@ -240,13 +296,15 @@ function SpawnSpriteObject(ObjCount, SpritePath, StartSpawnPos, speed, IsFliped,
     }
 }
 
-function SpawnFrendleyUnit(ObjCount, SpritePath, offset, StartSpawnPos, StartSize, speed, name, IsFliped, IsProjectile){
+function SpawnFrendleyUnit(ObjCount, SpritePath, offset, StartSpawnPos, StartSize, speed, name, IsFliped, IsProjectile, IsBoulder){
     for(let i = 0; i < ObjCount; i++){
         let temp = new Sprite(SpritePath, offset, StartSpawnPos, {x: StartSize.x, y: StartSize.y}, {x: StartSize.x, y: StartSize.y}, speed, name, IsFliped);
         if(IsProjectile){
             PlayerProjectiles.push(temp);
         }
-        SpritesToDraw.push(temp);
+        if(IsBoulder){
+            BoulderProjectiles.push(temp);
+        }
     }
 }
 
@@ -258,19 +316,18 @@ function RemoveObjByNameFromList(List, NameToFind){
             DidItWork = true;
         }
     }
-    console.log(DidItWork);
 }
 
 //Uses the spawn function to spawn goblins for testing
-SpawnSpriteObject(12, "Sprites/Goblin.png", {x: Canvas.width, y: HotBarSize}, -1.5, true, true);
-SpawnSpriteObject(12, "Sprites/Gold.png", {x: 0, y: HotBarSize}, 0, Math.round(Math.random()), false);
+SpawnSpriteObject(12, "Sprites/Gold.png", {x: 0, y: HotBarSize}, 0, Math.round(Math.random()), false, 1);
 
 //Test varables
-const Dwarf = new Sprite("Sprites/Dwarf.png", 0, {x: 375, y: 208}, {x: 16, y: 16}, {x: 16, y: 16}, 0.1, "Dwarf", false);
-const Wizard = new Sprite("Sprites/Wizard.png", 0, {x: 375, y: 192}, {x: 16, y: 16}, {x: 16, y: 16}, 0.15, "Wizard", false);
-const TileSelector = new Sprite("Sprites/Dragon.png", 0, {x: 0, y: HotBarSize}, {x: 46, y: 16}, {x: 46, y: 16}, 0, "TileSelector", false);
+const FireIcon1 = new Sprite("Sprites/FireProjectile.png", 97, {x: 150, y: 2.5}, {x: 32, y: 16}, {x: 16, y: 8}, 0.1, "FireIcon", false, 1);
+const FireIcon2 = new Sprite("Sprites/FireProjectile.png", 97, {x: 150, y: 10}, {x: 32, y: 16}, {x: 16, y: 8}, 0.1, "FireIcon", false, 1);
+const BoulderIcon = new Sprite("Sprites/Boulder.png", 16, {x: 172.5, y: 2.5}, {x: 16, y: 16}, {x: 16, y: 16}, 0.1, "BoulderIcon", false, 1);
+const TileSelector = new Sprite("Sprites/Dragon.png", 0, {x: 0, y: HotBarSize}, {x: 46, y: 16}, {x: 46, y: 16}, 0, "TileSelector", false, 1);
 
-SpritesToDraw.push(Wizard, Dwarf, TileSelector);
+SpritesToDraw.push(FireIcon1, FireIcon2, TileSelector, BoulderIcon);
 
 //A function that runs evrey frame
 Repeat();
@@ -292,6 +349,11 @@ document.addEventListener("keydown", function(event){
             TileSelector.position.y -= GridTileSize; 
         }
     }
+
+    if(event.repeat){
+        return;
+    }
+
     if(event.key === " "){
         StartMusic.play();
         if(Cooldown > 20 - (CurrentWave * 2)){
@@ -300,7 +362,34 @@ document.addEventListener("keydown", function(event){
         }
         ProjectileId += 1;
     }
+    if(CurrentMalice >= 6){
+        if(event.key === "e" || event.key === "E"){
+            CurrentMalice -= 6;
+            StartMusic.play();
+            if(Cooldown > 20 - (CurrentWave * 2)){
+                let TempProjectile = SpawnFrendleyUnit(1, "Sprites/FireProjectile.png", 97, {x: TileSelector.position.x, y: TileSelector.position.y}, {x: 32, y: 16}, 2, "FireProjectile " + ProjectileId + Math.floor(Math.random() * (-100 - 100) + 100), false, true);
+                let TempProjectile2 = SpawnFrendleyUnit(1, "Sprites/FireProjectile.png", 97, {x: TileSelector.position.x, y: TileSelector.position.y + GridTileSize}, {x: 32, y: 16}, 2, "FireProjectile " + ProjectileId + Math.floor(Math.random() * (-100 - 100) + 100), false, true);
+                let TempProjectile3 = SpawnFrendleyUnit(1, "Sprites/FireProjectile.png", 97, {x: TileSelector.position.x, y: TileSelector.position.y - GridTileSize}, {x: 32, y: 16}, 2, "FireProjectile " + ProjectileId + Math.floor(Math.random() * (-100 - 100) + 100), false, true);
+                Cooldown = 0;
+            }
+            ProjectileId += 1;
+        }
+    }
+
+    if(CurrentMalice >= 15){
+        if(event.key === "r" || event.key === "R"){
+            CurrentMalice -= 15;
+            StartMusic.play();
+            if(Cooldown > 20 - (CurrentWave * 2)){
+                let TempBoulder = SpawnFrendleyUnit(1, "Sprites/Boulder.png", 97, {x: TileSelector.position.x, y: TileSelector.position.y}, {x: 16, y: 16}, 2, "Boulder " + ProjectileId + Math.floor(Math.random() * (-100 - 100) + 100), false, false, true);
+                Cooldown = 0;
+            }
+            ProjectileId += 1;
+        }
+    }
 });
+
+
 
 // //DragonAnimations
  const DragonAnimations = [
