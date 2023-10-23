@@ -8,7 +8,7 @@ Canvas.style.scale = "relative";
 
 //Hot bar variables
 const HotBarSize = 32;
-let CurrentWave = 10;
+let CurrentWave = 0;
 let CurrentWaveForBoses = 0;
 let CurrentGold = 120;
 let ElapsedTime = 0;
@@ -130,7 +130,9 @@ function Repeat() {
                 SpawnSpriteObject(8, "Sprites/Dwarf.png", {x: Canvas.width, y: HotBarSize + 32}, -0.2, true, true, 3);
             }
             if(CurrentWaveForBoses == 10){
-                SpawnSpriteObject(8, "Sprites/Wizard.png", {x: Canvas.width, y: HotBarSize + 32}, -0.25, true, true, 2);
+                w++;
+                SpawnSpriteObject(8, "Sprites/Dwarf.png", {x: Canvas.width, y: HotBarSize + 32}, -0.2, true, true, 3);
+                SpawnSpriteObject(6, "Sprites/Wizard.png", {x: Canvas.width, y: HotBarSize + 48}, -0.25, true, true, 2);
             }
             if(CurrentWaveForBoses != 5 && CurrentWaveForBoses != 10){
                 SpawnSpriteObject(12, "Sprites/Goblin.png", {x: Canvas.width, y: HotBarSize}, -0.5, true, true, 1);
@@ -153,11 +155,14 @@ function Repeat() {
         }
         for (let e = 0; e < Enemys.length; e++) {
             if(CollisionDetect(CurrentBoulder, Enemys[e])){
-                Enemys[e].position = CurrentBoulder.position;
                 CurrentBoulder.health -= 1;
                 Enemys[e].health -= 1;
+                if(Enemys[e].health <= 0){
+                    Enemys[e].Destroy = true;
+                    Enemys.splice(e, 1);
+                }
                 if(CurrentBoulder.health <= 0){
-                    
+                    CurrentBoulder.Destroy = true;
                 }
             }
         }
@@ -376,9 +381,9 @@ document.addEventListener("keydown", function(event){
         }
     }
 
-    if(CurrentMalice >= 15){
+    if(CurrentMalice >= 25){
         if(event.key === "r" || event.key === "R"){
-            CurrentMalice -= 15;
+            CurrentMalice -= 25;
             StartMusic.play();
             if(Cooldown > 20 - (CurrentWave * 2)){
                 let TempBoulder = SpawnFrendleyUnit(1, "Sprites/Boulder.png", 97, {x: TileSelector.position.x, y: TileSelector.position.y}, {x: 16, y: 16}, 2, "Boulder " + ProjectileId + Math.floor(Math.random() * (-100 - 100) + 100), false, false, true);
