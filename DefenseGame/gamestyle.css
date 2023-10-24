@@ -18,6 +18,14 @@
     to {background-position: -2300 0}
 }
 
+p{
+    font-style: normal;
+    transform: translate(40%, 20%);
+    width: 50%;
+    scale: 125%;
+    text-align: center;
+}
+
 
 #Dragon{
     transform: scale(3) translate(0px, 0px);
