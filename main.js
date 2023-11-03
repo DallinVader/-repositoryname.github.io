@@ -8,6 +8,7 @@ let Num2;
 let Result;
 
 let ListOfNum = [];
+let ListOfNum2 = [];
 
 
 // Opens a tab to ColorChange site
@@ -58,9 +59,9 @@ function CalculateCal(){
             break
     }
 
-
     document.getElementById("OutputCalText").innerHTML = Result;
 }
+
 
 
 let val
@@ -68,8 +69,6 @@ function NumberAddButton(){
     console.clear();
 
     val = document.getElementById("AddingMachineNumber").value;
-
-    
     
     if(val == -1){
         CalculateList();
@@ -96,4 +95,19 @@ function CalculateList(){
         SumOfList += parseFloat(ListOfNum[i]);
     }
     document.getElementById("NumList").innerText = SumOfList;
+}
+
+
+function AddToCalculator(NumValue){
+    ListOfNum2.push(NumValue);
+    document.getElementById("InputAndOutput").value += NumValue;
+}
+
+function CalculateTheVisualCalculator(){
+    let calval = document.getElementById("InputAndOutput");
+    document.getElementById("InputAndOutput").value = eval(document.getElementById("InputAndOutput").value);
+}
+
+function ClearVisualCalculator(){
+    document.getElementById("InputAndOutput").value = "";
 }

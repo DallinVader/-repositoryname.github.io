@@ -35,6 +35,26 @@ p{
     align-items: center;
 }
 
+table{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+tr{
+    margin-left: auto; 
+    margin-right: auto; 
+}
+
+#InputAndOutput{
+    width: 100%;
+    background: none;
+}
+
+button{
+    width: 100px;
+    background: none;
+}
+
 h6{
     text-align: center;
     background: none;
