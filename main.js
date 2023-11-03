@@ -8,8 +8,6 @@ let Num2;
 let Result;
 
 let ListOfNum = [];
-let ListOfNum2 = [];
-
 
 // Opens a tab to ColorChange site
 function ChangePageToColorChanger(){
@@ -99,12 +97,10 @@ function CalculateList(){
 
 
 function AddToCalculator(NumValue){
-    ListOfNum2.push(NumValue);
     document.getElementById("InputAndOutput").value += NumValue;
 }
 
 function CalculateTheVisualCalculator(){
-    let calval = document.getElementById("InputAndOutput");
     document.getElementById("InputAndOutput").value = eval(document.getElementById("InputAndOutput").value);
 }
 
