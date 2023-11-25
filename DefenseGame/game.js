@@ -156,15 +156,15 @@ function Repeat() {
         CurrentWaveForBoses += 1;
         for(let w = 0; w < CurrentWave; w++){
             if(CurrentWaveForBoses == 5){
-                SpawnSpriteObject(8, "Sprites/Dwarf.png", {x: Canvas.width, y: HotBarSize + 32}, -0.2, true, true, 3, 0);
+                SpawnSpriteObject(6, "Sprites/Dwarf.png", {x: Canvas.width, y: HotBarSize + 32}, -0.2, true, true, 3, 0);
             }
             if(CurrentWaveForBoses == 10){
                 w++;
-                SpawnSpriteObject(8, "Sprites/Dwarf.png", {x: Canvas.width, y: HotBarSize + 32}, -0.2, true, true, 3, 0);
-                SpawnSpriteObject(6, "Sprites/Wizard.png", {x: Canvas.width, y: HotBarSize + 48}, -0.25, true, true, 2, 16 * 15);
+                SpawnSpriteObject(7, "Sprites/Dwarf.png", {x: Canvas.width, y: HotBarSize + 32}, -0.2, true, true, 3, 0);
+                SpawnSpriteObject(5, "Sprites/Wizard.png", {x: Canvas.width, y: HotBarSize + 48}, -0.25, true, true, 2, 16 * 15);
             }
             if(CurrentWaveForBoses != 5 && CurrentWaveForBoses != 10){
-                SpawnSpriteObject(12, "Sprites/Goblin.png", {x: Canvas.width, y: HotBarSize}, -0.5, true, true, 1, 0);
+                SpawnSpriteObject(10, "Sprites/Goblin.png", {x: Canvas.width, y: HotBarSize}, -0.5, true, true, 1, 0);
             }
         }
         if(CurrentWaveForBoses >= 10){
