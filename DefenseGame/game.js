@@ -70,12 +70,41 @@ function DrawGridTiles() {
     }
 }
 let Cooldown = 0;
+
+let AnimCoolTime = 0.1;
+
+let WizAnimCoolDown = 0.1;
 function Repeat() {
     DrawGridTiles();
 
     Cooldown += 1;
 
     ElapsedTime += 0.015;
+
+    for(let i = 0; i < SpritesToDraw.length; i++){
+        let PossibleWiz = SpritesToDraw[i];
+
+        if(PossibleWiz.health == 2){
+            if(ElapsedTime > PossibleWiz.WizAnimCoolDown){
+                PossibleWiz.ImgCrop += 16
+                PossibleWiz.WizAnimCoolDown = ElapsedTime + 0.1;
+            }
+            if(PossibleWiz.ImgCrop > 16 * 18){
+                PossibleWiz.ImgCrop = 16 * 15;
+            }
+        }
+    }
+
+    if(ElapsedTime > AnimCoolTime){
+        AnimCoolTime = ElapsedTime + 0.1;
+        if(TileSelector.ImgCrop >= 46 * 5){
+            TileSelector.ImgCrop = 0;
+        }
+        else{
+            TileSelector.ImgCrop += 46;
+        }
+        
+    }
 
     //Draws the menu at the top of the canvas in black
     ctx.drawStyle = "black";
@@ -88,7 +117,7 @@ function Repeat() {
     ctx.font = "15px Arial";
     ctx.fillText("Wave " + CurrentWave, 0, 25);
     ctx.fillText("Gold " + CurrentGold, 60, 25);
-    ctx.fillText("Malice Collected: " + CurrentMalice, 300, 25);
+    ctx.fillText("Malice Collected: " + CurrentMalice, 0, 238);
     ctx.fillText("Time: " + Math.round(ElapsedTime), 455, 25);
     ctx.fillText("E", 150, 30);
     ctx.fillText("R", 175, 30);
@@ -127,15 +156,15 @@ function Repeat() {
         CurrentWaveForBoses += 1;
         for(let w = 0; w < CurrentWave; w++){
             if(CurrentWaveForBoses == 5){
-                SpawnSpriteObject(8, "Sprites/Dwarf.png", {x: Canvas.width, y: HotBarSize + 32}, -0.2, true, true, 3);
+                SpawnSpriteObject(8, "Sprites/Dwarf.png", {x: Canvas.width, y: HotBarSize + 32}, -0.2, true, true, 3, 0);
             }
             if(CurrentWaveForBoses == 10){
                 w++;
-                SpawnSpriteObject(8, "Sprites/Dwarf.png", {x: Canvas.width, y: HotBarSize + 32}, -0.2, true, true, 3);
-                SpawnSpriteObject(6, "Sprites/Wizard.png", {x: Canvas.width, y: HotBarSize + 48}, -0.25, true, true, 2);
+                SpawnSpriteObject(8, "Sprites/Dwarf.png", {x: Canvas.width, y: HotBarSize + 32}, -0.2, true, true, 3, 0);
+                SpawnSpriteObject(6, "Sprites/Wizard.png", {x: Canvas.width, y: HotBarSize + 48}, -0.25, true, true, 2, 16 * 15);
             }
             if(CurrentWaveForBoses != 5 && CurrentWaveForBoses != 10){
-                SpawnSpriteObject(12, "Sprites/Goblin.png", {x: Canvas.width, y: HotBarSize}, -0.5, true, true, 1);
+                SpawnSpriteObject(12, "Sprites/Goblin.png", {x: Canvas.width, y: HotBarSize}, -0.5, true, true, 1, 0);
             }
         }
         if(CurrentWaveForBoses >= 10){
@@ -216,7 +245,9 @@ function Repeat() {
 
         if(CurrentEnemy.gold > 0){
             CurrentEnemy.position.x += CurrentEnemy.speed * -0.5;
-            CurrentEnemy.ImgCrop = 16;
+            if(CurrentEnemy.name != "Sprites/Wizard.png"){
+                CurrentEnemy.ImgCrop = 16;
+            }
         }
         if(CurrentEnemy.gold > 0 && CurrentEnemy.position.x > Canvas.width){
             CurrentGold -= CurrentEnemy.gold;
@@ -252,6 +283,8 @@ class Sprite{
         this.Destroy = false;
         this.health = Health;
         this.IsHitByBoulder = false;
+
+        this.WizAnimCoolDown = 0.1;
         
         this.gold = 0;
 
@@ -259,10 +292,10 @@ class Sprite{
         this.img.src = ImageSrc;
     }
     
+    
     //Draws the sprite and flips it if neciscary
     DrawSprite(flip){
-        ctx.save();
-
+        ctx.save()
         if(flip){
             ctx.scale(-1, 1);
             ctx.drawImage(this.img, this.ImgCrop, 0, this.size.x, this.size.y, -this.position.x - 16, this.position.y, this.scale.x, this.scale.y);    
@@ -291,9 +324,10 @@ function CollisionDetect(a, b){
 }
 
 //Function that spawns objects for me
-function SpawnSpriteObject(ObjCount, SpritePath, StartSpawnPos, speed, IsFliped, IsEvil, Health){
+function SpawnSpriteObject(ObjCount, SpritePath, StartSpawnPos, speed, IsFliped, IsEvil, Health, SpriteOff = 0){
     for(let i = 0; i < ObjCount; i++){
-        let temp = new Sprite(SpritePath, 0, {x: StartSpawnPos.x, y: StartSpawnPos.y + (GridTileSize * i)}, {x: 16, y: 16}, {x: 16, y: 16}, Math.random(0, 1) * (0 - 1) + 1 * speed, SpritePath + " " + i + " " + Math.floor(Math.random() * (-100000 - 100000) + 100000), IsFliped, Health);
+        //creates a new sprite and adds it to the proper lists also adds a unique name to each new sprite obj.
+        let temp = new Sprite(SpritePath, SpriteOff, {x: StartSpawnPos.x, y: StartSpawnPos.y + (GridTileSize * i)}, {x: 16, y: 16}, {x: 16, y: 16}, Math.random(0, 1) * (0 - 1) + 1 * speed, SpritePath + " " + i + " " + Math.floor(Math.random() * (-100000 - 100000) + 100000), IsFliped, Health);
         SpritesToDraw.push(temp);
         if(IsEvil){
             Enemys.push(temp);
@@ -330,6 +364,7 @@ SpawnSpriteObject(12, "Sprites/Gold.png", {x: 0, y: HotBarSize}, 0, Math.round(M
 const FireIcon1 = new Sprite("Sprites/FireProjectile.png", 97, {x: 150, y: 2.5}, {x: 32, y: 16}, {x: 16, y: 8}, 0.1, "FireIcon", false, 1);
 const FireIcon2 = new Sprite("Sprites/FireProjectile.png", 97, {x: 150, y: 10}, {x: 32, y: 16}, {x: 16, y: 8}, 0.1, "FireIcon", false, 1);
 const BoulderIcon = new Sprite("Sprites/Boulder.png", 16, {x: 172.5, y: 2.5}, {x: 16, y: 16}, {x: 16, y: 16}, 0.1, "BoulderIcon", false, 1);
+//Dragon varable
 const TileSelector = new Sprite("Sprites/Dragon.png", 0, {x: 0, y: HotBarSize}, {x: 46, y: 16}, {x: 46, y: 16}, 0, "TileSelector", false, 1);
 
 SpritesToDraw.push(FireIcon1, FireIcon2, TileSelector, BoulderIcon);
