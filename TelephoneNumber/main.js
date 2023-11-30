@@ -7,6 +7,7 @@ function SubmitToVader() {
     console.log(UserName, UserAddress, UserEmail, UserPhone);
 }
 
+//Load random image when the window loads.
 let RandoImg = ["url(../images/Enlist.jpg)", "url(../images/StarWarsDarthVaderLift.jpg)", "url(../images/Enlist2.jpg)", "url(../images/Vader.jpg)"]
 function OnWindowLoad(){
     let RandRange = Math.round(Math.random() * RandoImg.length);

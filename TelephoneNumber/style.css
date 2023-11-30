@@ -2,6 +2,7 @@ body{
     background-image: url('../images/StarWarsDarthVaderLift.jpg');
     background-size: 35%;
     background-position-x: center;
+    background-position-y: 30%;
     background-repeat: no-repeat;
     background-color: black;
 }
